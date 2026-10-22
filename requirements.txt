@@ -1,0 +1,8 @@
+mediapipe==0.10.14  # must be a full wheel that ships mp.solutions (1.x / 0.10.3x drop it)
+opencv-python 
+numpy 
+scipy 
+matplotlib 
+pillow 
+pandas 
+pytest
