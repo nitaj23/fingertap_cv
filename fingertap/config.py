@@ -44,14 +44,23 @@ class Config:
     dnorm_max_jump: float = 0.9
 
     # --- Runtime causal smoothing of d_norm (spec section 5.3) ---
-    smooth_alpha: float = 0.4  # exponential moving average factor
+    # EMA is a low-pass filter: a small alpha heavily attenuates FAST taps
+    # (their short swings get damped below the hysteresis band and are missed),
+    # while slow exaggerated taps survive. 0.65 keeps enough high-frequency
+    # amplitude to detect fast, consistent tapping; the hysteresis band still
+    # absorbs the residual chatter.
+    smooth_alpha: float = 0.65  # exponential moving average factor
 
     # --- Hysteresis tap detector (spec section 5.4) ---
     # Defaults used when auto-calibration from percentiles is disabled.
     t_low: float = 0.35
     t_high: float = 0.60
     min_closed_s: float = 0.060   # minimum time spent below T_low
-    min_cycle_s: float = 0.150    # refractory: minimum OPEN->CLOSED->OPEN duration
+    # Refractory: minimum OPEN->CLOSED->OPEN duration. This is a hard ceiling on
+    # tap rate (1 / min_cycle_s). 0.150 capped detection at ~6.7 taps/s and
+    # clipped genuinely fast tapping; 0.100 raises the ceiling to ~10 taps/s
+    # while still rejecting sub-100 ms chatter.
+    min_cycle_s: float = 0.100    # refractory: minimum OPEN->CLOSED->OPEN duration
 
     # Derive thresholds from robust percentiles of observed d_norm instead of
     # the fixed absolutes above. Percentiles chosen inside the open/close band.
