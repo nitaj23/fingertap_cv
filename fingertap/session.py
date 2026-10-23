@@ -23,6 +23,7 @@ import hand_track_module as htmod
 from .config import Config
 from .signal import SignalProcessor, Sample
 from .smoothing import CausalEMA
+from .preprocess import preprocess
 from .detector import TapDetector, TapEvent, derive_thresholds
 from .metrics import compute_metrics, SessionMetrics
 from .quality import assess, QualityReport
@@ -147,6 +148,7 @@ def run_offline(video_path: str, config: Config | None = None,
             if not ret:
                 break
             frame = cv.resize(frame, (cfg.width, cfg.height))
+            frame = preprocess(frame, cfg)  # optional enhance / HSV ROI (spec 9.1)
             pos_ms = cap.get(cv.CAP_PROP_POS_MSEC)
             t = (pos_ms / 1000.0) if pos_ms and pos_ms > 0 else frame_idx / nominal_fps
             detector.findHands(frame, draw=False)

@@ -32,6 +32,7 @@ import hand_track_module as htmod
 
 from .config import Config, THUMB_TIP, INDEX_TIP
 from .session import SessionProcessor
+from .preprocess import preprocess
 from .export import export_all
 
 
@@ -108,6 +109,7 @@ class CaptureWorker(threading.Thread):
                 if not ret:
                     continue
                 frame = cv.resize(frame, (self.cfg.width, self.cfg.height))
+                frame = preprocess(frame, self.cfg)  # optional enhance / HSV ROI (spec 9.1)
                 t = time.perf_counter() - t0
 
                 detector.findHands(frame, draw=True)

@@ -83,5 +83,20 @@ class Config:
     detection_con: float = 0.7
     tracking_con: float = 0.5
 
+    # --- Optional preprocessing experiments (spec section 9.1) ---
+    # Config-gated course ablations, applied between resize and MediaPipe; all
+    # default to no-ops so the runtime pipeline stays the minimal five-stage
+    # flow. See fingertap/preprocess.py and experiments/ablation.py.
+    enhance: str = "none"           # none | gamma | clahe (Lab 2 enhancement)
+    gamma: float = 1.5              # >1 brightens shadows (power-law transform)
+    clahe_clip: float = 2.0         # CLAHE contrast-clip limit
+    clahe_grid: int = 8             # CLAHE tile grid (grid x grid)
+    use_hsv_roi: bool = False       # Lab 4 HSV skin segmentation -> ROI crop
+    hsv_lower: tuple = (0, 30, 60)  # skin HSV lower bound (H 0-179)
+    hsv_upper: tuple = (25, 160, 255)
+    roi_morph_kernel: int = 5       # open/close kernel size for mask cleanup
+    roi_pad_frac: float = 0.20      # bbox padding as a fraction of its size
+    roi_min_area_frac: float = 0.02  # reject blobs smaller than this of frame
+
     def to_dict(self) -> dict:
         return asdict(self)
